@@ -1,6 +1,4 @@
-
 class MathParser {
- 
   static MATH_FUNCTIONS = new Set([
     "sin",
     "cos",
@@ -21,12 +19,9 @@ class MathParser {
 
   constructor(expr) {
     let sanitized = expr.replace(/\s+/g, "").toLowerCase();
-
-   
     if (/\+\+|--|\+-|-\+/.test(sanitized)) {
       throw new Error("Invalid expression: consecutive '+' or '-' operators");
     }
-
     this.original = sanitized;
     this.tokens = [];
     this.pos = 0;
@@ -45,12 +40,9 @@ class MathParser {
         this.tokens.push({ type: "NUM", val: parseFloat(num) });
       } else if (this.isLetter(s[i])) {
         let word = "";
-      
         while (i < s.length && this.isLetter(s[i])) {
           word += s[i++];
         }
-
-      
         if (MathParser.MATH_FUNCTIONS.has(word)) {
           this.tokens.push({ type: "FUNC", val: word });
         } else if (word === "x") {
@@ -74,7 +66,6 @@ class MathParser {
         throw new Error(`Invalid character: ${s[i]}`);
       }
 
-     
       if (i < s.length) {
         const prev = this.tokens[this.tokens.length - 1];
         const nextChar = s[i];
@@ -99,7 +90,6 @@ class MathParser {
   isLetter(c) {
     return (c >= "a" && c <= "z") || (c >= "A" && c <= "Z");
   }
-
   peek() {
     return this.tokens[this.pos];
   }
@@ -192,7 +182,6 @@ class MathParser {
   }
 }
 
-
 class NumberNode {
   constructor(val) {
     this.val = val;
@@ -204,6 +193,7 @@ class NumberNode {
     return this.val.toString();
   }
 }
+
 class VarNode {
   eval(x) {
     return x;
@@ -212,6 +202,7 @@ class VarNode {
     return x.toString();
   }
 }
+
 class BinOpNode {
   constructor(op, left, right) {
     this.op = op;
@@ -235,13 +226,11 @@ class BinOpNode {
     }
   }
   str(x) {
-    const lStr = this.left.str(x);
-    const rStr = this.right.str(x);
-    return `(${lStr} ${this.op} ${rStr})`;
+    return `(${this.left.str(x)} ${this.op} ${this.right.str(x)})`;
   }
 }
+
 class FuncNode {
- 
   static MATH_MAP = {
     sin: "sin",
     cos: "cos",
@@ -259,51 +248,41 @@ class FuncNode {
     log2: "log2",
     ln: "log",
   };
-
   constructor(name, arg) {
     this.name = name;
     this.arg = arg;
   }
-
   eval(x) {
     const argVal = this.arg.eval(x);
     const mathFunc = FuncNode.MATH_MAP[this.name];
-    if (mathFunc && typeof Math[mathFunc] === "function") {
+    if (mathFunc && typeof Math[mathFunc] === "function")
       return Math[mathFunc](argVal);
-    }
     throw new Error(`Unknown math function: ${this.name}`);
   }
-
   str(x) {
     return `${this.name}(${this.arg.str(x)})`;
   }
 }
-
 
 class GraphEngine {
   constructor(canvasId) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas.getContext("2d");
     this.container = this.canvas.parentElement;
-
     this.scale = 40;
     this.offsetX = 0;
     this.offsetY = 0;
-
     this.showGrid = true;
     this.showLabels = true;
-
     this.functions = [];
     this.hoverX = null;
     this.hoverY = null;
     this.highlightFuncIndex = 0;
-
     this.isDragging = false;
     this.dragStartX = 0;
     this.dragStartY = 0;
     this.dragOffsetX = 0;
     this.dragOffsetY = 0;
-
     this.colors = [
       "#2979FF",
       "#00E676",
@@ -313,7 +292,7 @@ class GraphEngine {
       "#00E5FF",
     ];
     this.colorIndex = 0;
-
+    this.calculusState = { limit: null, derivative: null, integral: null };
     this.resize();
     this.bindEvents();
     this.draw();
@@ -340,17 +319,13 @@ class GraphEngine {
       const rect = this.canvas.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
-
       const mathX = this.screenToMathX(mouseX);
       const mathY = this.screenToMathY(mouseY);
-
       const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
       this.scale *= zoomFactor;
       this.scale = Math.max(5, Math.min(500, this.scale));
-
       this.offsetX = mouseX - mathX * this.scale;
       this.offsetY = mouseY + mathY * this.scale;
-
       this.draw();
       this.updateRangeInputs();
     });
@@ -376,7 +351,6 @@ class GraphEngine {
         const rect = this.canvas.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
-
         if (
           mouseX >= 0 &&
           mouseX <= this.width &&
@@ -486,7 +460,6 @@ class GraphEngine {
     const xMax = this.screenToMathX(this.width);
     const yMin = this.screenToMathY(this.height);
     const yMax = this.screenToMathY(0);
-
     const xStep = this.getNiceStep(xMax - xMin);
     const yStep = this.getNiceStep(yMax - yMin);
 
@@ -511,7 +484,6 @@ class GraphEngine {
 
     const originX = this.mathToScreenX(0);
     const originY = this.mathToScreenY(0);
-
     ctx.strokeStyle = "#DCE2E8";
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -551,6 +523,10 @@ class GraphEngine {
     this.functions.forEach((func, idx) => {
       this.drawFunction(func, idx === this.highlightFuncIndex);
     });
+
+    if (this.calculusState.integral) this.drawIntegralArea();
+    if (this.calculusState.derivative) this.drawTangentLine();
+    if (this.calculusState.limit) this.drawLimitIndicator();
 
     if (this.hoverX !== null && this.functions.length > 0) {
       const targetFunc =
@@ -597,7 +573,6 @@ class GraphEngine {
     ctx.beginPath();
     let first = true;
     let prevY = null;
-
     const yMin = this.screenToMathY(this.height);
     const yMax = this.screenToMathY(0);
     const yRange = yMax - yMin;
@@ -611,18 +586,14 @@ class GraphEngine {
           first = true;
           continue;
         }
-
         if (mathY > yMax + threshold || mathY < yMin - threshold) {
           first = true;
           continue;
         }
-
         const py = this.mathToScreenY(mathY);
-
         if (prevY !== null && Math.abs(py - prevY) > this.height * 0.8) {
           first = true;
         }
-
         if (first) {
           ctx.moveTo(px, py);
           first = false;
@@ -636,6 +607,119 @@ class GraphEngine {
     }
     ctx.stroke();
     ctx.shadowBlur = 0;
+  }
+
+  drawTangentLine() {
+    if (!this.calculusState.derivative) return;
+    const { x, funcIndex } = this.calculusState.derivative;
+    const func = this.functions[funcIndex];
+    if (!func) return;
+
+    const ctx = this.ctx;
+    const h = Math.max(1e-7, Math.abs(x) * 1e-12);
+    let y, dy;
+    try {
+      y = func.ast.eval(x);
+      dy = (func.ast.eval(x + h) - func.ast.eval(x - h)) / (2 * h);
+    } catch (e) {
+      return;
+    }
+    if (!isFinite(y) || !isFinite(dy)) return;
+
+    ctx.save();
+    ctx.strokeStyle = "#FFEA00";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    const xMin = this.screenToMathX(0);
+    const xMax = this.screenToMathX(this.width);
+    const startY = dy * (xMin - x) + y;
+    const endY = dy * (xMax - x) + y;
+    ctx.moveTo(this.mathToScreenX(xMin), this.mathToScreenY(startY));
+    ctx.lineTo(this.mathToScreenX(xMax), this.mathToScreenY(endY));
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = "#FFEA00";
+    ctx.beginPath();
+    ctx.arc(this.mathToScreenX(x), this.mathToScreenY(y), 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  drawIntegralArea() {
+    if (!this.calculusState.integral) return;
+    const { a, b, funcIndex } = this.calculusState.integral;
+    const func = this.functions[funcIndex];
+    if (!func) return;
+
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.fillStyle = "rgba(41, 121, 255, 0.2)";
+    ctx.strokeStyle = "rgba(41, 121, 255, 0.6)";
+    ctx.lineWidth = 1;
+
+    const steps = 200;
+    const dx = (b - a) / steps;
+
+    ctx.beginPath();
+    ctx.moveTo(this.mathToScreenX(a), this.mathToScreenY(0));
+    for (let i = 0; i <= steps; i++) {
+      const currX = a + i * dx;
+      try {
+        const currY = func.ast.eval(currX);
+        if (isFinite(currY))
+          ctx.lineTo(this.mathToScreenX(currX), this.mathToScreenY(currY));
+      } catch (e) {}
+    }
+    ctx.lineTo(this.mathToScreenX(b), this.mathToScreenY(0));
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  drawLimitIndicator() {
+    if (!this.calculusState.limit) return;
+    const { c, funcIndex } = this.calculusState.limit;
+    const func = this.functions[funcIndex];
+    if (!func) return;
+
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.strokeStyle = "#00E676";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 4]);
+
+    const px = this.mathToScreenX(c);
+    ctx.beginPath();
+    ctx.moveTo(px, 0);
+    ctx.lineTo(px, this.height);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const h = Math.max(1e-7, Math.abs(c) * 1e-12);
+    let leftLim, rightLim;
+    try {
+      leftLim = func.ast.eval(c - h);
+    } catch (e) {}
+    try {
+      rightLim = func.ast.eval(c + h);
+    } catch (e) {}
+
+    if (isFinite(leftLim)) {
+      ctx.fillStyle = "#00E676";
+      ctx.beginPath();
+      ctx.arc(px, this.mathToScreenY(leftLim), 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (isFinite(rightLim)) {
+      ctx.fillStyle = "#00E676";
+      ctx.beginPath();
+      ctx.arc(px, this.mathToScreenY(rightLim), 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
   }
 
   formatNum(n) {
@@ -740,7 +824,6 @@ class GraphEngine {
   }
 }
 
-
 class App {
   constructor() {
     this.graph = new GraphEngine("graphCanvas");
@@ -808,6 +891,8 @@ class App {
         this.addFunction();
       });
     });
+
+    this.bindCalculusUI();
   }
 
   addFunction() {
@@ -817,7 +902,37 @@ class App {
     if (expr.toLowerCase().startsWith("y =")) expr = expr.substring(3).trim();
     if (!expr) return;
 
+    const normalizedExpr = expr.replace(/\s+/g, "").toLowerCase();
+    const isDuplicate = this.graph.functions.some(
+      (f) => f.expr.replace(/\s+/g, "").toLowerCase() === normalizedExpr,
+    );
+
+    if (isDuplicate) {
+      alert(`Function "${expr}" already exists in the list.`);
+      return;
+    }
+
     try {
+      const parser = new MathParser(expr);
+      const ast = parser.parse();
+
+      const testPoints = [-100, -10, -1, 0, 1, 10, 100];
+      const results = testPoints.map((x) => {
+        try {
+          return ast.eval(x);
+        } catch (e) {
+          return NaN;
+        }
+      });
+
+      const allInvalid = results.every((r) => !isFinite(r));
+      if (allInvalid) {
+        alert(
+          `Function "${expr}" produces invalid values (Infinity/NaN) at all test points.`,
+        );
+        return;
+      }
+
       this.graph.addFunction(expr);
       this.renderFuncList();
       this.calculate();
@@ -838,13 +953,7 @@ class App {
       item.className = "func-item";
       if (idx === this.graph.highlightFuncIndex)
         item.style.borderColor = "#2979FF";
-      item.innerHTML = `
-                <div class="func-item-left">
-                    <div class="func-color" style="background:${func.color}"></div>
-                    <span class="func-expr">y = ${func.expr}</span>
-                </div>
-                <button class="func-remove" data-idx="${idx}">&times;</button>
-            `;
+      item.innerHTML = `<div class="func-item-left"><div class="func-color" style="background:${func.color}"></div><span class="func-expr">y = ${func.expr}</span></div><button class="func-remove" data-idx="${idx}">&times;</button>`;
       item.querySelector(".func-remove").addEventListener("click", (e) => {
         e.stopPropagation();
         this.graph.removeFunction(idx);
@@ -874,7 +983,6 @@ class App {
       stepRes.textContent = "";
       return;
     }
-
     const func = this.graph.functions[this.graph.highlightFuncIndex];
     if (isNaN(xVal)) {
       stepEq.textContent = `y = ${func.expr}`;
@@ -882,7 +990,6 @@ class App {
       stepRes.textContent = "";
       return;
     }
-
     try {
       const yVal = func.ast.eval(xVal);
       stepEq.textContent = `y = ${func.expr}`;
@@ -898,6 +1005,175 @@ class App {
     }
   }
 
+  bindCalculusUI() {
+    const limitX = document.getElementById("limitX");
+    const derivX = document.getElementById("derivX");
+    const intA = document.getElementById("intA");
+    const intB = document.getElementById("intB");
+
+    const updateCalculusCalculations = () => {
+      const idx = this.graph.highlightFuncIndex;
+      if (this.graph.functions.length === 0 || !this.graph.functions[idx]) {
+        this.graph.calculusState = {
+          limit: null,
+          derivative: null,
+          integral: null,
+        };
+        this.graph.draw();
+        document.getElementById("limitResult").textContent =
+          "Select a function from the list first.";
+        document.getElementById("derivResult").textContent =
+          "Select a function from the list first.";
+        document.getElementById("intResult").textContent =
+          "Select a function from the list first.";
+        return;
+      }
+
+      const func = this.graph.functions[idx];
+
+      const cLim = parseFloat(limitX.value);
+      if (!isNaN(cLim)) {
+        this.graph.calculusState.limit = { c: cLim, funcIndex: idx };
+        const epsilon = Math.max(1e-7, Math.abs(cLim) * 1e-12);
+
+        let lL, rL;
+        try {
+          lL = func.ast.eval(cLim - epsilon);
+        } catch (e) {}
+        try {
+          rL = func.ast.eval(cLim + epsilon);
+        } catch (e) {}
+
+        const res = document.getElementById("limitResult");
+
+        if (Math.abs(cLim) > 1e5) {
+          const testVals = [
+            cLim - 1000,
+            cLim - 100,
+            cLim - 10,
+            cLim,
+            cLim + 10,
+            cLim + 100,
+            cLim + 1000,
+          ];
+          const results = testVals.map((x) => {
+            try {
+              return func.ast.eval(x);
+            } catch (e) {
+              return NaN;
+            }
+          });
+
+          const finiteResults = results.filter((r) => isFinite(r));
+          const isOscillating =
+            results.some((r) => !isFinite(r)) ||
+            (finiteResults.length > 2 &&
+              Math.max(...finiteResults) - Math.min(...finiteResults) > 100);
+
+          if (isOscillating) {
+            res.textContent = "Indeterminate / Oscillation at Infinity";
+            this.graph.draw();
+            return;
+          }
+        }
+
+        if (isFinite(lL) && isFinite(rL) && Math.abs(lL - rL) < epsilon * 100) {
+          res.textContent = `lim = ${Math.round(lL * 10000) / 10000}`;
+        } else {
+          res.textContent = `Limit DNE (L: ${isFinite(lL) ? lL.toFixed(4) : "undef"}, R: ${isFinite(rL) ? rL.toFixed(4) : "undef"})`;
+        }
+      } else {
+        this.graph.calculusState.limit = null;
+        document.getElementById("limitResult").textContent =
+          "Select a function and enter x value.";
+      }
+
+      const cDer = parseFloat(derivX.value);
+      if (!isNaN(cDer)) {
+        this.graph.calculusState.derivative = { x: cDer, funcIndex: idx };
+        const h = Math.max(1e-7, Math.abs(cDer) * 1e-12);
+        let dy;
+        try {
+          dy = (func.ast.eval(cDer + h) - func.ast.eval(cDer - h)) / (2 * h);
+        } catch (e) {}
+        const res = document.getElementById("derivResult");
+        if (isFinite(dy)) {
+          res.textContent = `f'(${cDer}) = ${Math.round(dy * 10000) / 10000}`;
+        } else {
+          res.textContent = "Derivative undefined.";
+        }
+      } else {
+        this.graph.calculusState.derivative = null;
+        document.getElementById("derivResult").textContent =
+          "Select a function and enter x value.";
+      }
+
+      const valA = parseFloat(intA.value);
+      const valB = parseFloat(intB.value);
+      if (!isNaN(valA) && !isNaN(valB) && valA !== valB) {
+        const a = valA;
+        const b = valB;
+
+        this.graph.calculusState.integral = {
+          a: Math.min(a, b),
+          b: Math.max(a, b),
+          funcIndex: idx,
+        };
+
+        const n = 1000;
+        const dx = (b - a) / n;
+        let sum = 0;
+        try {
+          sum += func.ast.eval(a);
+          sum += func.ast.eval(b);
+          for (let i = 1; i < n; i++) {
+            const x = a + i * dx;
+            const y = func.ast.eval(x);
+            sum += (i % 2 === 0 ? 2 : 4) * y;
+          }
+          sum *= dx / 3;
+        } catch (e) {}
+
+        const res = document.getElementById("intResult");
+        if (isFinite(sum)) {
+          res.textContent = `∫ = ${Math.round(sum * 10000) / 10000}`;
+        } else {
+          res.textContent = "Integral undefined.";
+        }
+      } else {
+        this.graph.calculusState.integral = null;
+        document.getElementById("intResult").textContent =
+          "Select a function and enter bounds.";
+      }
+      this.graph.draw();
+    };
+
+    [limitX, derivX, intA, intB].forEach((el) =>
+      el.addEventListener("input", updateCalculusCalculations),
+    );
+
+    const origRemove = this.graph.removeFunction.bind(this.graph);
+    this.graph.removeFunction = (index) => {
+      origRemove(index);
+      updateCalculusCalculations();
+    };
+
+    const origHighlight = this.graph.highlightFuncIndex;
+    Object.defineProperty(this.graph, "highlightFuncIndex", {
+      get: function () {
+        return this._highlightFuncIndex !== undefined
+          ? this._highlightFuncIndex
+          : 0;
+      },
+      set: function (val) {
+        this._highlightFuncIndex = val;
+        updateCalculusCalculations();
+      },
+      configurable: true,
+    });
+    this.graph._highlightFuncIndex = origHighlight;
+  }
+
   initDefault() {
     const funcInput = document.getElementById("funcInput");
     funcInput.value = "x^2 - 4";
@@ -908,7 +1184,6 @@ class App {
     this.calculate();
   }
 }
-
 
 class Loader {
   constructor() {
@@ -932,7 +1207,6 @@ class Loader {
 }
 
 const wait = (ms) => new Promise((res) => setTimeout(res, ms));
-
 document.addEventListener("DOMContentLoaded", async () => {
   const loader = new Loader();
   loader.update(15, "Initializing coordinate system...");

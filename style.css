@@ -1,4 +1,3 @@
-
 :root {
   --charcoal: #20252d;
   --light-cool-gray: #dce2e8;
@@ -45,10 +44,12 @@ body {
     opacity 0.6s ease,
     visibility 0.6s ease;
 }
+
 #loading-screen.fade-out {
   opacity: 0;
   visibility: hidden;
 }
+
 .loader-content {
   text-align: center;
   display: flex;
@@ -57,6 +58,7 @@ body {
   gap: 16px;
   padding: 20px;
 }
+
 .loader-title {
   font-size: 32px;
   font-weight: 700;
@@ -64,6 +66,7 @@ body {
   color: var(--white);
   margin-bottom: -8px;
 }
+
 .loader-subtitle {
   font-size: 12px;
   font-weight: 500;
@@ -71,30 +74,36 @@ body {
   color: var(--ice-blue);
   text-transform: uppercase;
 }
+
 .loader-graph {
   width: 180px;
   height: 180px;
   margin: 10px 0;
 }
+
 .loader-svg {
   width: 100%;
   height: 100%;
   overflow: visible;
 }
+
 .loader-grid {
   opacity: 0;
   animation: loaderFadeIn 1s ease forwards 0.2s;
 }
+
 .loader-axis {
   stroke-dasharray: 240;
   stroke-dashoffset: 240;
   animation: loaderDrawLine 0.8s ease forwards 0.6s;
 }
+
 .loader-curve {
   stroke-dasharray: 300;
   stroke-dashoffset: 300;
   animation: loaderDrawLine 1.2s ease forwards 1.2s;
 }
+
 .loader-point {
   opacity: 0;
   transform-origin: center;
@@ -103,16 +112,19 @@ body {
     loaderFadeIn 0.4s ease forwards 2s,
     loaderPulse 2s infinite ease-in-out 2s;
 }
+
 @keyframes loaderFadeIn {
   to {
     opacity: 1;
   }
 }
+
 @keyframes loaderDrawLine {
   to {
     stroke-dashoffset: 0;
   }
 }
+
 @keyframes loaderPulse {
   0%,
   100% {
@@ -124,18 +136,21 @@ body {
     opacity: 1;
   }
 }
+
 .loader-main-text {
   font-size: 14px;
   color: var(--light-cool-gray);
   letter-spacing: 1px;
   margin-top: 10px;
 }
+
 .loader-status {
   font-size: 12px;
   color: var(--text-secondary);
   font-family: "Courier New", monospace;
   min-height: 16px;
 }
+
 .loader-progress-container {
   width: 240px;
   height: 2px;
@@ -144,6 +159,7 @@ body {
   overflow: hidden;
   margin-top: 8px;
 }
+
 .loader-progress-bar {
   height: 100%;
   width: 0%;
@@ -151,6 +167,7 @@ body {
   box-shadow: 0 0 8px rgba(41, 121, 255, 0.6);
   transition: width 0.3s ease;
 }
+
 .loader-percent {
   font-size: 11px;
   color: var(--electric-blue);
@@ -158,6 +175,7 @@ body {
   font-weight: 600;
   margin-top: 4px;
 }
+
 .loader-footer {
   font-size: 10px;
   letter-spacing: 3px;
@@ -193,22 +211,26 @@ body {
   justify-content: space-between;
   flex-shrink: 0;
 }
+
 .logo {
   display: flex;
   align-items: center;
   gap: 12px;
 }
+
 .logo-icon {
   font-size: 24px;
   color: var(--electric-blue);
   font-weight: bold;
   text-shadow: 0 0 10px rgba(41, 121, 255, 0.5);
 }
+
 .logo h1 {
   font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.5px;
 }
+
 .nav-info {
   color: var(--text-secondary);
   font-size: 14px;
@@ -219,6 +241,7 @@ body {
   flex: 1;
   overflow: hidden;
 }
+
 .sidebar {
   width: 340px;
   background: var(--bg-dark);
@@ -230,6 +253,7 @@ body {
   gap: 20px;
   flex-shrink: 0;
 }
+
 .sidebar::-webkit-scrollbar {
   width: 6px;
 }
@@ -247,6 +271,7 @@ body {
   border-radius: 12px;
   padding: 20px;
 }
+
 .panel-title {
   font-size: 14px;
   font-weight: 600;
@@ -263,16 +288,34 @@ body {
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
+  min-width: 0;
 }
+
 .input-group label {
   font-size: 16px;
   font-weight: 500;
   color: var(--electric-blue);
   font-family: "Courier New", monospace;
+  min-width: 40px;
+  flex-shrink: 0;
 }
+
+.input-group input[type="text"],
+.input-group input[type="number"] {
+  min-width: 0;
+  flex: 1;
+}
+
+.input-group .add-btn {
+  width: auto;
+  margin-top: 0;
+  flex-shrink: 0;
+  padding: 10px 18px;
+  white-space: nowrap;
+}
+
 input[type="text"],
 input[type="number"] {
-  flex: 1;
   background: var(--charcoal);
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -282,6 +325,7 @@ input[type="number"] {
   font-family: "Courier New", monospace;
   transition: all 0.2s ease;
 }
+
 input[type="text"]:focus,
 input[type="number"]:focus {
   outline: none;
@@ -300,14 +344,17 @@ input[type="number"]:focus {
   width: 100%;
   margin-top: 4px;
 }
+
 .btn-primary {
   background: var(--electric-blue);
   color: var(--white);
 }
+
 .btn-primary:hover {
   background: #408aff;
   box-shadow: 0 4px 12px rgba(41, 121, 255, 0.3);
 }
+
 .btn-secondary {
   background: transparent;
   border: 1px solid var(--border-color);
@@ -317,15 +364,18 @@ input[type="number"]:focus {
   margin: 0;
   font-size: 12px;
 }
+
 .btn-secondary:hover {
   border-color: var(--electric-blue);
   color: var(--electric-blue);
 }
+
 .btn-outline {
   background: transparent;
   border: 1px solid var(--border-color);
   color: var(--light-cool-gray);
 }
+
 .btn-outline:hover {
   border-color: var(--ice-blue);
   color: var(--ice-blue);
@@ -337,6 +387,7 @@ input[type="number"]:focus {
   flex-direction: column;
   gap: 8px;
 }
+
 .func-item {
   display: flex;
   align-items: center;
@@ -345,22 +396,32 @@ input[type="number"]:focus {
   padding: 8px 12px;
   border-radius: 8px;
   border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
 }
+
+.func-item:hover {
+  border-color: #4a5568;
+}
+
 .func-item-left {
   display: flex;
   align-items: center;
   gap: 10px;
 }
+
 .func-color {
   width: 12px;
   height: 12px;
   border-radius: 50%;
 }
+
 .func-expr {
   font-family: "Courier New", monospace;
   font-size: 14px;
   color: var(--white);
 }
+
 .func-remove {
   background: none;
   border: none;
@@ -369,6 +430,7 @@ input[type="number"]:focus {
   font-size: 16px;
   padding: 0 4px;
 }
+
 .func-remove:hover {
   color: #ff4d4f;
 }
@@ -380,10 +442,40 @@ input[type="number"]:focus {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
+
 .preset-btns {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+.calc-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.calc-section {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.calc-section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.calc-subtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .calc-result {
@@ -394,11 +486,14 @@ input[type="number"]:focus {
   margin-top: 12px;
   font-family: "Courier New", monospace;
   font-size: 14px;
+  min-height: 48px;
 }
+
 .result-step {
   margin-bottom: 6px;
   color: var(--light-cool-gray);
 }
+
 .result-step:last-child {
   margin-bottom: 0;
   color: var(--electric-blue);
@@ -413,14 +508,17 @@ input[type="number"]:focus {
   justify-content: space-between;
   margin-bottom: 14px;
 }
+
 .control-row label {
   font-size: 13px;
   color: var(--light-cool-gray);
 }
+
 .range-inputs {
   display: flex;
   gap: 8px;
 }
+
 .range-inputs input {
   width: 60px;
   padding: 6px 8px;
@@ -438,7 +536,9 @@ input[type="checkbox"] {
   position: relative;
   cursor: pointer;
   transition: all 0.2s;
+  margin: 0;
 }
+
 input[type="checkbox"]::before {
   content: "";
   position: absolute;
@@ -450,10 +550,12 @@ input[type="checkbox"]::before {
   left: 2px;
   transition: all 0.2s;
 }
+
 input[type="checkbox"]:checked {
   background: var(--electric-blue);
   border-color: var(--electric-blue);
 }
+
 input[type="checkbox"]:checked::before {
   background: var(--white);
   left: 18px;
@@ -465,9 +567,11 @@ input[type="checkbox"]:checked::before {
   color: var(--text-secondary);
   margin-bottom: 12px;
 }
+
 .edu-content p:last-child {
   margin-bottom: 0;
 }
+
 .edu-content strong {
   color: var(--ice-blue);
   font-weight: 600;
@@ -479,11 +583,13 @@ input[type="checkbox"]:checked::before {
   background: var(--charcoal);
   overflow: hidden;
 }
+
 .canvas-container {
   width: 100%;
   height: 100%;
   position: relative;
 }
+
 #graphCanvas {
   display: block;
   width: 100%;
@@ -506,6 +612,7 @@ input[type="checkbox"]:checked::before {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   z-index: 10;
 }
+
 .tooltip.visible {
   opacity: 1;
 }
@@ -524,6 +631,7 @@ input[type="checkbox"]:checked::before {
   gap: 8px;
   min-width: 120px;
 }
+
 .legend-item {
   display: flex;
   align-items: center;
@@ -531,6 +639,7 @@ input[type="checkbox"]:checked::before {
   font-size: 13px;
   font-family: "Courier New", monospace;
 }
+
 .legend-color {
   width: 16px;
   height: 3px;
